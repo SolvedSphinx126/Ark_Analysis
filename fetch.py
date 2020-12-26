@@ -24,20 +24,18 @@ stocks = [ # list of ETF information tuples
 
 def update():
     print("run")
-    for stock in stocks:    #for each ETF
+    for stock in stocks:    # for each ETF
 
-        j = requests.get(stock[2], allow_redirects=True)                    # get CSV file
-        open(stock[1], "wb").write(j.content)                               # write local CSV copy
-        sql = 'INSERT INTO ' + stock[0] + ' values(?, ?, ?, ?, ?, ?, ?)'    # setup SQL add Command
-        data = [                                                            # declare list for ARK ETFs
-
-        ]
+        j = requests.get(stock[2], allow_redirects=True)                                                    # get CSV file
+        open(stock[1], "wb").write(j.content)                                                               # write local CSV copy
+        sql = 'INSERT INTO ' + stock[0] + ' values(?, ?, ?, ?, ?, ?, ?)'                                    # setup SQL add Command
+        data = []                                                                                           # declare list for ARK ETFs
         with open(stock[1], newline="") as file:                                                            # open local CSV file
             reader = csv.reader(file)                                                                       # define file reader
             for row in reader:                                                                              # for each line in the csv file
                 if re.search("\d+/\d+/\d+", str(row)):                                                      # if data starts with a date
                     info = str(row).strip('[\']').split("\', \'")                                           # split data into list
-                    if len(info[3]) > 0:                                                                    #if the ticker isn't blank
+                    if len(info[3]) > 0:                                                                    # if the ticker isn't blank
                         try:
                             cap = yf.Ticker(info[3].strip()).info["marketCap"]                              # attempt to get market cap from yfinance
                         except:
@@ -54,8 +52,8 @@ def update():
         flag = True                                                                                         # set a sentinel flag to check for any repeated dates
         for row in rows:                                                                                    # for each date on the database already
             flag = flag & (str(row).strip("()',") != date)                                                  # set flag to false if there is a repeated date
-                #print(str(row).strip("()',") + " " + str(flag))                                            # DEBUG: prints a list of dates found on the database and the flag status (False = repeated dates)
-        if (flag):                                                                                          # if the date in the CSV isn't in the database
+            #print(str(row).strip("()',") + " " + str(flag))                                                # DEBUG: prints a list of dates found on the database and the flag status (False = repeated dates)
+        if flag:                                                                                          # if the date in the CSV isn't in the database
             with con:                                                                                       # open local database
                 #cur.executemany(sql, data)                                                                 # Execute SQL add command
                 print("data added")
@@ -68,4 +66,3 @@ def update():
 
 if __name__ == "__main__":
     update()
-
