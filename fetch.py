@@ -2,7 +2,7 @@ import requests         # HTTP Requests
 import csv              # CSV
 import re               # RegEx
 import sqlite3 as sl    # Database
-import yfinance as yf   # Yahoo Finance
+import yfinance as yf   # Yahoo Financeggg
 
 con = sl.connect('ARK.db') # connect to local database
 
